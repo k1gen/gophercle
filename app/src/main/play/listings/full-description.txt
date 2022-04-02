@@ -1,0 +1,10 @@
+gophercle is a gopher client for android.
+
+it let's you:
+
+- access the gopherspace
+- go back in history for the current session
+- bookmark a url
+- set search url
+- set text size
+- set light/dark theme

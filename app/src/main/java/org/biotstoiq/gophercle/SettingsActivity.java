@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.method.LinkMovementMethod;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -105,7 +104,5 @@ public class SettingsActivity extends Activity {
 
             srchUrlValET = alrtDlg.findViewById(R.id.adrUrlValET);
         });
-
-        exploreBQTV.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
