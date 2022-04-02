@@ -23,7 +23,6 @@ public class SettingsActivity extends Activity {
     TextView srchUrlSvdValTV;
     EditText srchUrlValET;
     Switch darkThemeSwtch;
-    TextView exploreBQTV;
 
     SharedPreferences shrdPrfrncs;
 
@@ -45,7 +44,6 @@ public class SettingsActivity extends Activity {
         srchUrlSvdValTV = findViewById(R.id.srchUrlSvdValTV);
         srchUrlSvdValLL = findViewById(R.id.srchUrlSvdValLL);
         darkThemeSwtch = findViewById(R.id.drkThmSwtch);
-        exploreBQTV = findViewById(R.id.explrBtstqTV);
 
         shrdPrfrncs = PreferenceManager.getDefaultSharedPreferences(this);
 
