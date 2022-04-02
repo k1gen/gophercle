@@ -1,0 +1,46 @@
+gophercle - minimalist gopher client for android
+================================================
+gophercle lets you access the gopherspace in a very efficient, resource-friendly way.
+
+features
+--------
+- global search url
+- bookmarks
+- downloads
+- set text size
+- dark theme
+- minimalist and lightweight
+
+download
+--------
+  - you can download the APK from app/release folder.
+  - soon coming to Play Store and F-Droid.
+
+build
+-----
+  build from android studio
+  -------------------------
+  - clone this repository(git clone https://gitlab.com/biotstoiq/gophercle.git).
+  - open the project in Android Studio.
+  - select build variant(Build->Select Build Variant->release).
+  - choose "Build Bundle(s) / APK(s)" and build.
+
+  build from commandline
+  ----------------------
+  - first, please go through the build.gradle file to see the dependencies.
+  - make sure you have the commandline tools(https://developer.android.com/studio#cmdline-tools).
+  - make sure you have the SDK installed.
+  - clone this directory(git clone https://gitlab.com/biotstoiq/hayago.git) and cd into it.
+  - edit the local.properties file(if not present, create one) and give SDK 
+    location in the file(sdk.dir=/path/to/SDK).
+  - exectute "./gradlew assembleRelease".
+  - execute "adb install ./app/build/outputs/apk/release/*.apk"
+
+license
+-------
+  - MIT license
+
+contributions
+-------------
+there are a lot of ways in which you can contribute. you can help spread the word; you can 
+also contribute code/ideas/artwork/etc. any sort of help is appreciated.

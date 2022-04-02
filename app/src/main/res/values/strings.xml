@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">gophercle</string>
+    <string name="goto_bkmrks">|^|</string>
+    <string name="goto_stngs">^s</string>
+    <string name="rfrsh">^r</string>
+    <string name="bk_sgn">&lt;-</string>
+    <string name="adr">\@</string>
+    <string name="ok">OK</string>
+    <string name="go">Go</string>
+    <string name="cncl">Cancel</string>
+
+    <string name="loading">Loading</string>
+    <string name="invalid_protocol">Invalid protocol.</string>
+    <string name="host_not_found">Could not connect to host.</string>
+    <string name="invalid_port">Invalid port.</string>
+    <string name="invalid_path">Invalid path.</string>
+
+    <string name="ct_txt">[TXT]</string>
+    <string name="ct_sub">[MAP]</string>
+    <string name="ct_ccs">[CSO]</string>
+    <string name="ct_err">[ERR]</string>
+    <string name="ct_bhx">[BHX]</string>
+    <string name="ct_dos">[DOS]</string>
+    <string name="ct_uue">[UUE]</string>
+    <string name="ct_srh">[SRH]</string>
+    <string name="ct_tnt">[TNT]</string>
+    <string name="ct_bin">[BIN]</string>
+    <string name="ct_gif">[GIF]</string>
+    <string name="ct_mir">[MIR]</string>
+    <string name="ct_img">[IMG]</string>
+    <string name="ct_3270">[327]</string>
+
+    <string name="fnm">Filename:</string>
+    <string name="lction">Location:</string>
+    <string name="dnld">Download</string>
+    <string name="dnld_failed">Download failed.</string>
+
+    <string name="cnfrmtn">Are you sure?</string>
+
+    <string name="txt_size">Text size</string>
+    <string name="stngs">Settings</string>
+    <string name="drk_thm">Dark Theme (Restart Required)</string>
+
+    <string name="ad_to_bkmrks">Bookmark this page</string>
+    <string name="rmv">Remove</string>
+    <string name="srch">Search</string>
+    <string name="srch_url_wc">Search URL:</string>
+    <string name="url">URL:</string>
+    <string name="qry">Query:</string>
+    <string name="qry_hnt">eg: "books", "maroon"</string>
+    <string name="url_hnt">eg: gopher://myurlhost.org/myurlpath</string>
+
+    <string name="bkmrk_added">Bookmark added</string>
+
+    <string name="save">Save</string>
+    <string name="explr_btstq"><a href="https://biotstoiq.org">Explore biotstoiq.</a></string>
+</resources>
