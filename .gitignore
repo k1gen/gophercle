@@ -8,8 +8,10 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/build
+app/build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+app/src/test
+app/src/androidTest

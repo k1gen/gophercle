@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
     Button rfrshBtn;
     Button adrBtn;
     Button bkBtn;
+    Button shrBtn;
     View mainLL;
     View cntntLL;
     TextView srchUrlValTV;
@@ -92,7 +93,6 @@ public class MainActivity extends Activity {
         itmTypArLst = new ArrayList<>();
 
         initResources();
-
         showBkmrks();
 
         dnldDir = String.valueOf(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
@@ -118,6 +118,7 @@ public class MainActivity extends Activity {
             srchUrlValTV = alrtDlg.findViewById(R.id.srchUrlValTV);
             srchUrlValTV.setText(srchUrlStr);
             adBkmrkBtn = alrtDlg.findViewById(R.id.adBkmrkBtn);
+            shrBtn = alrtDlg.findViewById(R.id.shrBtn);
 
             if(onBkmrkPg) {
                 adBkmrkBtn.setVisibility(View.GONE);
@@ -127,6 +128,15 @@ public class MainActivity extends Activity {
                     alrtDlg.dismiss();
                 });
             }
+
+            shrBtn.setOnClickListener(view1 -> {
+                if(url != null) {
+                    Intent shrIntnt = new Intent(android.content.Intent.ACTION_SEND);
+                    shrIntnt.setType("text/plain");
+                    shrIntnt.putExtra(Intent.EXTRA_TEXT, url.getUrl());
+                    startActivity(Intent.createChooser(shrIntnt, getString(R.string.shr)));
+                }
+            });
             queryET = alrtDlg.findViewById(R.id.qryET);
         });
 
@@ -161,11 +171,19 @@ public class MainActivity extends Activity {
         bkBtn.setOnClickListener(view -> {
             int listSize = hstryArLst.size();
             if (listSize > 1) {
+                clickDriven = true;
                 backPressed = true;
-                hstryArLst.remove(listSize - 1);
-                itmTypArLst.remove(listSize - 1);
+                if(onBkmrkPg) {
+                    ++listSize;
+                } else {
+                    hstryArLst.remove(listSize - 1);
+                    itmTypArLst.remove(listSize - 1);
+                }
                 url.setUrlItemType(itmTypArLst.get(listSize - 2).charAt(0));
                 callInitConnection(hstryArLst.get(listSize - 2));
+            } else if(listSize == 1 && onBkmrkPg) {
+                url.setUrlItemType(itmTypArLst.get(0).charAt(0));
+                callInitConnection(hstryArLst.get(0));
             }
         });
 
@@ -449,12 +467,6 @@ public class MainActivity extends Activity {
         } else {
             displayMessage('e', "");
         }
-        if (!backPressed) {
-            hstryArLst.add(url.getUrl());
-            itmTypArLst.add(String.valueOf(url.getUrlItemType()));
-        } else {
-            backPressed = false;
-        }
     }
 
     void initiateSearch() {
@@ -565,6 +577,7 @@ public class MainActivity extends Activity {
                         tl = tl.concat(String.valueOf((char)fileSig[i]));
                         i++;
                     }
+                    url.setUrlItemType('1');
                     if (!clickDriven) {
                         if (isBinary) {
                             url.setUrlItemType('9');
@@ -579,9 +592,7 @@ public class MainActivity extends Activity {
                                 }
                                 i++;
                             }
-                            if (count == 3) {
-                                url.setUrlItemType('1');
-                            } else {
+                            if (count != 3) {
                                 url.setUrlItemType('0');
                             }
                         }
@@ -628,6 +639,12 @@ public class MainActivity extends Activity {
             connOk = true;
             url.makeURLfromParts();
             adrUrlStr = url.getUrl();
+            if (!backPressed) {
+                hstryArLst.add(url.getUrl());
+                itmTypArLst.add(String.valueOf(url.getUrlItemType()));
+            } else {
+                backPressed = false;
+            }
             return null;
         }
 
