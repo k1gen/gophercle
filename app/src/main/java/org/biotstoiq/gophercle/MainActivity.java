@@ -147,7 +147,7 @@ public class MainActivity extends Activity {
                 connOk = false;
                 clickDriven = false;
                 adrUrlStr = adrUrlValET.getText().toString();
-                callInitConnection(adrUrlStr);
+                callInitConnection(adrUrlStr, '\0');
             });
             dlgBldr.setNegativeButton(R.string.cncl,
                     (dialogInterface, i) -> dialogInterface.cancel());
@@ -164,7 +164,8 @@ public class MainActivity extends Activity {
 
         rfrshBtn.setOnClickListener(view -> {
             if(!adrUrlStr.equals("")) {
-                callInitConnection(adrUrlStr);
+                clickDriven = false;
+                callInitConnection(adrUrlStr, '\0');
             }
         });
 
@@ -179,11 +180,9 @@ public class MainActivity extends Activity {
                     hstryArLst.remove(listSize - 1);
                     itmTypArLst.remove(listSize - 1);
                 }
-                url.setUrlItemType(itmTypArLst.get(listSize - 2).charAt(0));
-                callInitConnection(hstryArLst.get(listSize - 2));
+                callInitConnection(hstryArLst.get(listSize - 2), itmTypArLst.get(listSize - 2).charAt(0));
             } else if(listSize == 1 && onBkmrkPg) {
-                url.setUrlItemType(itmTypArLst.get(0).charAt(0));
-                callInitConnection(hstryArLst.get(0));
+                callInitConnection(hstryArLst.get(0), itmTypArLst.get(listSize - 2).charAt(0));
             }
         });
 
@@ -227,7 +226,7 @@ public class MainActivity extends Activity {
                     connOk = false;
                     clickDriven = false;
                     dlgBldr = new AlertDialog.Builder(this);
-                    dlgBldr.setPositiveButton(R.string.go, (dialogInterface, i) -> callInitConnection(url));
+                    dlgBldr.setPositiveButton(R.string.go, (dialogInterface, i) -> callInitConnection(url, '\0'));
                     dlgBldr.setNegativeButton(R.string.rmv, (dialogInterface, i) -> rmvBkmrk(jf));
                     alrtDlg = dlgBldr.create();
                     alrtDlg.show();
@@ -286,10 +285,13 @@ public class MainActivity extends Activity {
         startActivity(settingsIntent);
     }
 
-    private void callInitConnection(String inputURL) {
+    private void callInitConnection(String inputURL, char itmTyp) {
         closeComponents();
         onBkmrkPg = false;
         url = new URL(inputURL);
+        if(clickDriven) {
+            url.setUrlItemType(itmTyp);
+        }
         if (url.isUrlOkay()) {
             cnctn = null;
             displayMessage('l', inputURL);
@@ -339,6 +341,7 @@ public class MainActivity extends Activity {
     }
 
     void displayContent() {
+        System.out.println(url.getUrlItemType());
         if (connOk) {
             ((LinearLayout) cntntLL).removeAllViews();
             lnTV = new TextView(this);
@@ -420,7 +423,7 @@ public class MainActivity extends Activity {
                                 switch (itmTyp) {
                                     case '0':
                                     case '1':
-                                        callInitConnection(tempUrl);
+                                        callInitConnection(tempUrl, itmTyp);
                                         break;
                                     case '7':
                                         dlgBldr = new AlertDialog.Builder(this);
@@ -445,7 +448,7 @@ public class MainActivity extends Activity {
                                                 .concat(lineSplit[1]
                                                         .substring(lineSplit[1].lastIndexOf("/") + 1)));
                                         dlgBldr.setPositiveButton(R.string.dnld,
-                                                ((dialogInterface, i1) -> callInitConnection(tempUrl)));
+                                                ((dialogInterface, i1) -> callInitConnection(tempUrl, itmTyp)));
                                         dlgBldr.setNegativeButton(R.string.cncl,
                                                 ((dialogInterface, i1) -> dialogInterface.cancel()));
                                         alrtDlg = dlgBldr.create();
@@ -471,7 +474,7 @@ public class MainActivity extends Activity {
 
     void initiateSearch() {
         clickDriven = true;
-        callInitConnection(srchUrlStr.concat("\t").concat(queryET.getText().toString()));
+        callInitConnection(srchUrlStr.concat("\t").concat(queryET.getText().toString()), '7');
     }
 
     void setUrlParts(String[] lineSplit, char itemType) {
@@ -577,7 +580,6 @@ public class MainActivity extends Activity {
                         tl = tl.concat(String.valueOf((char)fileSig[i]));
                         i++;
                     }
-                    url.setUrlItemType('1');
                     if (!clickDriven) {
                         if (isBinary) {
                             url.setUrlItemType('9');
@@ -594,6 +596,8 @@ public class MainActivity extends Activity {
                             }
                             if (count != 3) {
                                 url.setUrlItemType('0');
+                            } else {
+                                url.setUrlItemType('1');
                             }
                         }
                     }

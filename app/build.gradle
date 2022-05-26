@@ -9,8 +9,8 @@ android {
         applicationId "org.biotstoiq.gophercle"
         minSdk 21
         targetSdk 31
-        versionCode 12
-        versionName "0.92"
+        versionCode 13
+        versionName "0.93"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
