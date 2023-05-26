@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -26,11 +25,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
 
@@ -72,8 +74,6 @@ public class MainActivity extends Activity {
     Button itmBtn;
     Button adBkmrkBtn;
 
-    private static AsyncTask<Void, Void, Void> cnctn;
-
     String dnldDir;
 
     AlertDialog.Builder dlgBldr;
@@ -107,12 +107,9 @@ public class MainActivity extends Activity {
         stngsBtn.setOnClickListener(view -> {
             dlgBldr = new AlertDialog.Builder(this);
             dlgBldr.setView(R.layout.alert_dialog_options);
-            dlgBldr.setNegativeButton(R.string.cncl,
-                    ((dialogInterface, i) -> dialogInterface.cancel()));
-            dlgBldr.setNeutralButton(R.string.stngs,
-                    ((dialogInterface, i) -> openSettings()));
-            dlgBldr.setPositiveButton(R.string.srch,
-                    ((dialogInterface, i1) -> initiateSearch()));
+            dlgBldr.setNegativeButton(R.string.cncl, ((dialogInterface, i) -> dialogInterface.cancel()));
+            dlgBldr.setNeutralButton(R.string.stngs, ((dialogInterface, i) -> openSettings()));
+            dlgBldr.setPositiveButton(R.string.srch, ((dialogInterface, i1) -> initiateSearch()));
 
             alrtDlg = dlgBldr.create();
             alrtDlg.show();
@@ -122,7 +119,7 @@ public class MainActivity extends Activity {
             adBkmrkBtn = alrtDlg.findViewById(R.id.adBkmrkBtn);
             shrBtn = alrtDlg.findViewById(R.id.shrBtn);
 
-            if(onBkmrkPg) {
+            if (onBkmrkPg) {
                 adBkmrkBtn.setVisibility(View.GONE);
             } else {
                 adBkmrkBtn.setOnClickListener(view1 -> {
@@ -132,7 +129,7 @@ public class MainActivity extends Activity {
             }
 
             shrBtn.setOnClickListener(view1 -> {
-                if(url != null) {
+                if (url != null) {
                     Intent shrIntnt = new Intent(android.content.Intent.ACTION_SEND);
                     shrIntnt.setType("text/plain");
                     shrIntnt.putExtra(Intent.EXTRA_TEXT, url.getUrl());
@@ -149,15 +146,16 @@ public class MainActivity extends Activity {
                 connOk = false;
                 clickDriven = false;
                 adrUrlStr = adrUrlValET.getText().toString();
-                callInitConnection(adrUrlStr, '\0');
+                // Create a new thread to execute the ConnectAsync task
+                Thread thread = new Thread(new ConnectAsync());
+                thread.start();
             });
-            dlgBldr.setNegativeButton(R.string.cncl,
-                    (dialogInterface, i) -> dialogInterface.cancel());
+            dlgBldr.setNegativeButton(R.string.cncl, (dialogInterface, i) -> dialogInterface.cancel());
             alrtDlg = dlgBldr.create();
             alrtDlg.show();
 
             adrUrlValET = alrtDlg.findViewById(R.id.adrUrlValET);
-            if(url != null && url.isUrlOkay()) {
+            if (url != null && url.isUrlOkay()) {
                 adrUrlValET.setText(url.getUrl());
             } else {
                 adrUrlValET.setText(adrUrlStr);
@@ -165,9 +163,11 @@ public class MainActivity extends Activity {
         });
 
         rfrshBtn.setOnClickListener(view -> {
-            if(!adrUrlStr.equals("")) {
+            if (!adrUrlStr.equals("")) {
                 clickDriven = false;
-                callInitConnection(adrUrlStr, '\0');
+                // Create a new thread to execute the ConnectAsync task
+                Thread thread = new Thread(new ConnectAsync());
+                thread.start();
             }
         });
 
@@ -176,19 +176,21 @@ public class MainActivity extends Activity {
             if (listSize > 1) {
                 clickDriven = true;
                 backPressed = true;
-                if(onBkmrkPg) {
+                if (onBkmrkPg) {
                     ++listSize;
                 } else {
                     hstryArLst.remove(listSize - 1);
                     itmTypArLst.remove(listSize - 1);
                 }
-                callInitConnection(hstryArLst.get(listSize - 2), itmTypArLst.get(listSize - 2).charAt(0));
-            } else if(listSize == 1 && onBkmrkPg) {
-                callInitConnection(hstryArLst.get(0), itmTypArLst.get(listSize - 2).charAt(0));
+                // Create a new thread to execute the ConnectAsync task
+                Thread thread = new Thread(new ConnectAsync());
+                thread.start();
+            } else if (listSize == 1 && onBkmrkPg) {
+                // Create a new thread to execute the ConnectAsync task
+                Thread thread = new Thread(new ConnectAsync());
+                thread.start();
             }
         });
-
-        cnctn = new ConnectAsync();
     }
 
     void initResources() {
@@ -287,14 +289,13 @@ public class MainActivity extends Activity {
         closeComponents();
         onBkmrkPg = false;
         url = new URL(inputURL);
-        if(clickDriven) {
+        if (clickDriven) {
             url.setUrlItemType(itmTyp);
         }
         if (url.isUrlOkay()) {
-            cnctn = null;
             displayMessage('l', inputURL);
-            cnctn = new ConnectAsync();
-            cnctn.execute();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.shutdown(); // Shutdown the executor when no longer needed
         } else {
             displayMessage('e', "");
         }
@@ -535,12 +536,27 @@ public class MainActivity extends Activity {
     }
 
 
-    private class ConnectAsync extends AsyncTask<Void, Void, Void> {
+    private class ConnectAsync implements Runnable {
+        private static final int CONNECTION_TIMEOUT = 5000;
+
         @Override
-        protected Void doInBackground(Void... voids) {
+        public void run() {
+            Socket socket = null;
+
             try {
                 lnArLst.clear();
-                sckt = new Socket(url.getUrlHost(), url.getUrlPort());
+
+                try {
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT);
+                } catch (IOException e) {
+                    url.setErrorCode(2);
+                    connOk = false;
+                    e.printStackTrace();
+                    return;
+                }
+
+                sckt = socket;
                 prntWrtr = new PrintWriter(sckt.getOutputStream());
                 prntWrtr.write(url.getUrlPath().concat(url.getUrlQuery()).concat("\r\n"));
                 prntWrtr.flush();
@@ -555,7 +571,7 @@ public class MainActivity extends Activity {
                     boolean isBinary = false, onceDone = false;
                     while (i < read) {
                         if (fileSig[i] == 10 || fileSig[i] == 13) {
-                            if(!onceDone) {
+                            if (!onceDone) {
                                 onceDone = true;
                             } else {
                                 onceDone = false;
@@ -571,7 +587,7 @@ public class MainActivity extends Activity {
                             isBinary = true;
                             break;
                         }
-                        tl = tl.concat(String.valueOf((char)fileSig[i]));
+                        tl = tl.concat(String.valueOf((char) fileSig[i]));
                         i++;
                     }
                     if (!clickDriven) {
@@ -598,7 +614,7 @@ public class MainActivity extends Activity {
                 } else {
                     url.setErrorCode(4);
                     connOk = false;
-                    return null;
+                    return;
                 }
                 switch (url.getUrlItemType()) {
                     case '0':
@@ -616,7 +632,7 @@ public class MainActivity extends Activity {
                         byte[] bytes = new byte[1024];
                         fileName = url.getUrlPath().substring(url.getUrlPath().lastIndexOf("/") + 1);
                         OutputStream fileStream = Files.newOutputStream(Paths.get(dnldDir.concat("/").concat(fileName)));
-                        fileStream.write(fileSig, 0 , read);
+                        fileStream.write(fileSig, 0, read);
                         while ((read = inputStream.read(bytes)) != -1) {
                             fileStream.write(bytes, 0, read);
                         }
@@ -630,29 +646,37 @@ public class MainActivity extends Activity {
                 url.setErrorCode(2);
                 connOk = false;
                 e.printStackTrace();
-                return null;
             } finally {
+                // Close the socket in the finally block
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 closeComponents();
-            }
-            connOk = true;
-            url.makeURLfromParts();
-            adrUrlStr = url.getUrl();
-            if (!backPressed) {
-                hstryArLst.add(url.getUrl());
-                itmTypArLst.add(String.valueOf(url.getUrlItemType()));
-            } else {
-                backPressed = false;
-            }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(Void unused) {
-            super.onPostExecute(unused);
-            if (connOk) {
-                displayContent();
-            } else {
-                displayMessage('e', "");
+                connOk = true;
+                url.makeURLfromParts();
+                adrUrlStr = url.getUrl();
+                if (!backPressed) {
+                    hstryArLst.add(url.getUrl());
+                    itmTypArLst.add(String.valueOf(url.getUrlItemType()));
+                } else {
+                    backPressed = false;
+                }
+
+                // Dismiss the dialog outside the runOnUiThread block
+                alrtDlg.dismiss();
+
+                runOnUiThread(() -> {
+                    if (connOk) {
+                        displayContent();
+                    } else {
+                        displayMessage('e', "");
+                    }
+                });
             }
         }
     }
