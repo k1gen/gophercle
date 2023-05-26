@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,14 +17,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileOutputStream;
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
+
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.Socket;
-import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -52,7 +55,6 @@ public class MainActivity extends Activity {
     boolean backPressed;
     boolean clickDriven = false;
     boolean fileDnlded;
-    boolean drkThmBool = false;
     boolean onBkmrkPg = true;
 
     EditText adrUrlValET;
@@ -204,10 +206,8 @@ public class MainActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         txtSizInt = shrdPrfrncs.getInt("txt_siz", 14);
-        drkThmBool = shrdPrfrncs.getBoolean("drk_thm", false);
         srchUrlStr = shrdPrfrncs.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs");
         setTheme();
-
     }
 
     void showBkmrks() {
@@ -269,15 +269,13 @@ public class MainActivity extends Activity {
     }
 
     void setTheme() {
-        if(drkThmBool) {
-            mainLL.setBackgroundColor(0xff000000);
-            stngsBtn.setTextColor(0xffffffff);
-            bkmrkBtn.setTextColor(0xffffffff);
-            adrBtn.setTextColor(0xffffffff);
-            rfrshBtn.setTextColor(0xffffffff);
-            bkBtn.setTextColor(0xffffffff);
-            getWindow().setNavigationBarColor(0xff000000);
-        }
+        mainLL.setBackgroundColor(0xff000000);
+        stngsBtn.setTextColor(0xffffffff);
+        bkmrkBtn.setTextColor(0xffffffff);
+        adrBtn.setTextColor(0xffffffff);
+        rfrshBtn.setTextColor(0xffffffff);
+        bkBtn.setTextColor(0xffffffff);
+        getWindow().setNavigationBarColor(0xff000000);
     }
 
     void openSettings() {
@@ -531,11 +529,7 @@ public class MainActivity extends Activity {
     }
 
     void setTextViewProps(TextView tv) {
-        if(drkThmBool) {
-            tv.setTextColor(0xffffffff);
-        } else {
-            tv.setTextColor(0xff000000);
-        }
+        tv.setTextColor(0xffffffff);
         tv.setTextSize(2, txtSizInt);
         tv.setTypeface(Typeface.MONOSPACE);
     }
@@ -621,7 +615,7 @@ public class MainActivity extends Activity {
                         fileDnlded = false;
                         byte[] bytes = new byte[1024];
                         fileName = url.getUrlPath().substring(url.getUrlPath().lastIndexOf("/") + 1);
-                        OutputStream fileStream = new FileOutputStream(dnldDir.concat("/").concat(fileName));
+                        OutputStream fileStream = Files.newOutputStream(Paths.get(dnldDir.concat("/").concat(fileName)));
                         fileStream.write(fileSig, 0 , read);
                         while ((read = inputStream.read(bytes)) != -1) {
                             fileStream.write(bytes, 0, read);
@@ -677,7 +671,7 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putBoolean("on_bkmrk_pg", onBkmrkPg);
@@ -688,7 +682,7 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         onBkmrkPg = savedInstanceState.getBoolean("on_bkmrk_pg", true);

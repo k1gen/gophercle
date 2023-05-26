@@ -7,5 +7,4 @@ it lets you:
 - bookmark a url
 - set global search url
 - set text size
-- set light/dark theme
 - share a link

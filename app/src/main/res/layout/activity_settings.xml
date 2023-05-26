@@ -24,7 +24,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:background="@color/gray" />
+            android:background="@color/black" />
 
         <LinearLayout
             android:id="@+id/txtSzeLL"
@@ -33,13 +33,15 @@
             android:layout_marginBottom="2dp"
             android:clickable="true"
             android:focusable="true"
+            android:minHeight="48dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:clickable="false"
                 android:text="@string/txt_size"
+                android:textAlignment="center"
                 android:textSize="20sp" />
 
             <View
@@ -62,7 +64,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            android:background="@color/gray" />
+            android:background="@color/black" />
 
         <LinearLayout
             android:id="@+id/srchUrlSvdValLL"
@@ -71,14 +73,16 @@
             android:layout_marginBottom="2dp"
             android:clickable="true"
             android:focusable="true"
+            android:minHeight="48dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="4dp"
                 android:clickable="false"
                 android:text="@string/srch_url_wc"
+                android:textAlignment="center"
                 android:textSize="20sp" />
 
             <View
@@ -93,39 +97,6 @@
                 android:clickable="false"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:background="@color/gray" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:clickable="false"
-                android:text="@string/drk_thm"
-                android:textSize="20sp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <Switch
-                android:id="@+id/drkThmSwtch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </LinearLayout>

@@ -1,8 +1,10 @@
-## gophercle is not developed/maintained anymore. please look for alternatives. ##
-
 gophercle - minimalist gopher client for android
 ================================================
 gophercle lets you access the gopherspace in a very efficient, resource-friendly way.
+
+this is a fork of https://gitlab.com/biotstoiq/gophercle, all credit goes to him
+there most probably won't be any new features/improvements because I don't know Java
+this repo exists because I wanted to use #ff000000 black backround instead of grey one
 
 features
 --------
@@ -12,11 +14,6 @@ features
 - set text size
 - dark theme
 - minimalist and lightweight
-
-download
---------
-  - you can download the APK from app/release folder.
-  - soon coming to Play Store and F-Droid.
 
 build
 -----

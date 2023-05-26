@@ -24,7 +24,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/gray" />
+        android:background="@color/black" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             android:layout_weight="1"
             android:textSize="24sp"
             android:text="@string/goto_stngs"
-            style="@android:style/Widget.Material.Light.Button.Borderless" />
+            style="@android:style/Widget.Material.Button.Borderless" />
 
         <Button
             android:id="@+id/bkmrksBtn"
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:textSize="24sp"
             android:text="@string/goto_bkmrks"
-            style="@android:style/Widget.Material.Light.Button.Borderless" />
+            style="@android:style/Widget.Material.Button.Borderless" />
 
         <Button
             android:id="@+id/adrBtn"
@@ -56,7 +56,7 @@
             android:layout_weight="1"
             android:textSize="24sp"
             android:text="@string/adr"
-            style="@android:style/Widget.Material.Light.Button.Borderless" />
+            style="@android:style/Widget.Material.Button.Borderless" />
 
         <Button
             android:id="@+id/rfrshBtn"
@@ -65,7 +65,7 @@
             android:layout_weight="1"
             android:textSize="24sp"
             android:text="@string/rfrsh"
-            style="@android:style/Widget.Material.Light.Button.Borderless" />
+            style="@android:style/Widget.Material.Button.Borderless" />
 
         <Button
             android:id="@+id/bkBtn"
@@ -74,7 +74,7 @@
             android:layout_height="match_parent"
             android:text="@string/bk_sgn"
             android:textSize="24sp"
-            style="@android:style/Widget.Material.Light.Button.Borderless" />
+            style="@android:style/Widget.Material.Button.Borderless" />
 
     </LinearLayout>
 </LinearLayout>

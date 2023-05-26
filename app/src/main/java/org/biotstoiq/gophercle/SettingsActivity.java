@@ -1,7 +1,6 @@
 package org.biotstoiq.gophercle;
 
 import android.app.Activity;
-
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.Switch;
 import android.widget.TextView;
 
 public class SettingsActivity extends Activity {
@@ -22,14 +20,10 @@ public class SettingsActivity extends Activity {
     LinearLayout srchUrlSvdValLL;
     TextView srchUrlSvdValTV;
     EditText srchUrlValET;
-    Switch darkThemeSwtch;
-
     SharedPreferences shrdPrfrncs;
 
     int txtSizInt;
     String srchUrlStr;
-    boolean drkThmBool;
-
     AlertDialog alrtDlg;
     AlertDialog.Builder dlgBldr;
 
@@ -43,29 +37,20 @@ public class SettingsActivity extends Activity {
         txtSzeValTV = findViewById(R.id.txtSzeVal);
         srchUrlSvdValTV = findViewById(R.id.srchUrlSvdValTV);
         srchUrlSvdValLL = findViewById(R.id.srchUrlSvdValLL);
-        darkThemeSwtch = findViewById(R.id.drkThmSwtch);
 
         shrdPrfrncs = PreferenceManager.getDefaultSharedPreferences(this);
 
         txtSizInt = shrdPrfrncs.getInt("txt_siz", 14);
         srchUrlStr = shrdPrfrncs.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs");
-        drkThmBool = shrdPrfrncs.getBoolean("drk_thm", false);
         SharedPreferences.Editor editor = shrdPrfrncs.edit();
 
         txtSzeValTV.setText(String.valueOf(txtSizInt));
         srchUrlSvdValTV.setText(srchUrlStr);
-        darkThemeSwtch.setChecked(drkThmBool);
 
         saveBtn.setOnClickListener(v -> {
-            boolean thmchngd = darkThemeSwtch.isChecked()
-                    != shrdPrfrncs.getBoolean("drk_thm", false);
             editor.putInt("txt_siz", txtSizInt);
             editor.putString("srch_url", srchUrlStr);
-            editor.putBoolean("drk_thm", darkThemeSwtch.isChecked());
             editor.apply();
-            if(thmchngd) {
-                this.finishAffinity();
-            }
         });
 
         textSizeLL.setOnClickListener(view -> {

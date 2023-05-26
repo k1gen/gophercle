@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="340dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -15,8 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:textSize="18sp"
-            android:text="@string/srch_url_wc" />
+            android:text="@string/srch_url_wc"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/srchUrlValTV"
@@ -33,7 +33,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:background="@color/gray" />
+        android:background="@color/black" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
 
         <EditText
             android:id="@+id/qryET"
-            android:layout_width="wrap_content"
+            android:layout_width="284dp"
             android:layout_height="wrap_content"
             android:autofillHints="search"
             android:fontFamily="serif-monospace"
@@ -65,7 +65,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:background="@color/gray" />
+        android:background="@color/black" />
 
     <LinearLayout
         android:layout_width="match_parent"
