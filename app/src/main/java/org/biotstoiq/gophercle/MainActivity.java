@@ -658,13 +658,15 @@ public class MainActivity extends Activity {
                 closeComponents();
 
                 connOk = true;
-                url.makeURLfromParts();
-                adrUrlStr = url.getUrl();
-                if (!backPressed) {
-                    hstryArLst.add(url.getUrl());
-                    itmTypArLst.add(String.valueOf(url.getUrlItemType()));
-                } else {
-                    backPressed = false;
+                if (url != null) {
+                    url.makeURLfromParts();
+                    adrUrlStr = url.getUrl();
+                    if (!backPressed) {
+                        hstryArLst.add(url.getUrl());
+                        itmTypArLst.add(String.valueOf(url.getUrlItemType()));
+                    } else {
+                        backPressed = false;
+                    }
                 }
 
                 // Dismiss the dialog outside the runOnUiThread block

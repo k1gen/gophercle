@@ -29,7 +29,7 @@ public class URL {
                 errorCode = 1;
                 return false;
             }
-            url = url.substring(index+ + 3);
+            url = url.substring(index + 3);
         } else {
             protocol = "gopher";
         }
