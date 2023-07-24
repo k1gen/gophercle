@@ -1,5 +1,7 @@
 package org.biotstoiq.gophercle
 
+import android.util.Log
+
 @Suppress("SpellCheckingInspection")
 class URL {
     companion object {
@@ -50,8 +52,10 @@ class URL {
         }
         fun initializeURL(urlString: String) {
             url = urlString
+            Log.d("Debug", "Received URL: $url")
             isUrlOkay = extractURLParts()
         }
+
 
         fun extractURLParts(): Boolean {
             var index: Int
@@ -66,52 +70,56 @@ class URL {
             } else {
                 protocol = "gopher"
             }
-            index = url.indexOf(":")
-            if (index != -1) {
-                urlHost = url.substring(0, index)
-                val extractedPort: Boolean
-                if (url.contains("/")) {
-                    extractedPort = extractPort(url.substring(index + 1, url.indexOf("/").also { index = it }))
-                    url = url.substring(index)
-                } else {
-                    extractedPort = extractPort(url.substring(index + 1))
-                    url = ""
-                }
-                if (!extractedPort) {
-                    errorCode = 3
-                    return false
-                }
+
+            // Extract host and port
+            if (url.contains(":")) {
+                index = url.indexOf(":")
+                val hostAndPort = url.split(":", limit = 2)
+                urlHost = hostAndPort[0]
+                val portAndPath = hostAndPort[1].split("/", limit = 2)
+                urlPort = portAndPath[0].toIntOrNull() ?: 70
+                url = if (portAndPath.size > 1) "/${portAndPath[1]}" else ""
             } else {
-                index = url.indexOf("/")
-                if (index != -1) {
-                    urlHost = url.substring(0, index)
-                    urlPort = 70
-                    url = url.substring(index)
-                } else {
-                    urlHost = url
-                    urlPort = 70
-                    url = ""
-                }
+                val hostAndPath = url.split("/", limit = 2)
+                urlHost = hostAndPath[0]
+                urlPort = 70
+                url = if (hostAndPath.size > 1) "/${hostAndPath[1]}" else ""
             }
-            if (url.isNotEmpty()) {
-                url = url.substring(1)
-                index = url.indexOf('/')
-                urlPath = if (index == 1) {
-                    url.substring(index)
-                } else {
-                    "/" + url
-                }
-            } else {
-                urlPath = "/"
-            }
+
+            // Extract path
+            urlPath = if (url.isNotEmpty()) url else "/"
+
+            // Extract query
             index = urlPath!!.indexOf('\t')
             urlQuery = if (index != -1) {
                 urlPath!!.substring(index)
             } else {
                 ""
             }
+
+            // Add debug logging to check parsed values
+            Log.d("Debug", "Parsed protocol: $protocol")
+            Log.d("Debug", "Parsed host: $urlHost")
+            Log.d("Debug", "Parsed port: $urlPort")
+            Log.d("Debug", "Parsed path: $urlPath")
+            Log.d("Debug", "Parsed query: $urlQuery")
+
             return true
         }
+
+
+        // Helper function to find first occurrence of '/', '?' or '#'
+        fun findFirstSpecialChar(str: String): Int {
+            val firstSlash = str.indexOf("/")
+            val firstQuestion = str.indexOf("?")
+            val firstHash = str.indexOf("#")
+            return minOf(
+                if (firstSlash != -1) firstSlash else str.length,
+                if (firstQuestion != -1) firstQuestion else str.length,
+                if (firstHash != -1) firstHash else str.length
+            )
+        }
+
 
         private fun extractPort(string: String): Boolean {
             return try {
