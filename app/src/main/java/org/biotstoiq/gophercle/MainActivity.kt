@@ -98,7 +98,7 @@ class MainActivity : Activity() {
                 adBkmrkBtn?.visibility = View.GONE
             } else {
                 adBkmrkBtn?.setOnClickListener { view1: View? ->
-                    adBkmrk(url.getUrl())
+                    adBkmrk(URL.fetchUrl())
                     alrtDlg?.dismiss()
                 }
             }
@@ -106,7 +106,7 @@ class MainActivity : Activity() {
                 if (url != null) {
                     val shrIntnt = Intent(Intent.ACTION_SEND)
                     shrIntnt.setType("text/plain")
-                    shrIntnt.putExtra(Intent.EXTRA_TEXT, url.getUrl())
+                    shrIntnt.putExtra(Intent.EXTRA_TEXT, URL.fetchUrl())
                     startActivity(Intent.createChooser(shrIntnt, getString(R.string.shr)))
                 }
             }
@@ -127,8 +127,8 @@ class MainActivity : Activity() {
             alrtDlg = dlgBldr!!.create()
             alrtDlg?.show()
             adrUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET)
-            if (url != null && url.isUrlOkay()) {
-                adrUrlValET.setText(url.getUrl())
+            if (url != null && URL.isUrlOkay()) {
+                adrUrlValET?.setText(URL.fetchUrl())
                 Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
             } else {
                 adrUrlValET?.setText(adrUrlStr)
@@ -256,12 +256,11 @@ class MainActivity : Activity() {
     private fun callInitConnection(inputURL: String, itmTyp: Char) {
         closeComponents()
         onBkmrkPg = false
-        url = URL()
         Log.d("url", "new URL(inputURL)")
         if (clickDriven) {
-            url.setUrlItemType(itmTyp)
+            URL.setUrlItemType(itmTyp)
         }
-        if (url.isUrlOkay()) {
+        if (URL.isUrlOkay()) {
             displayMessage('l', inputURL)
             Log.d("url", "displayMessage('l', inputURL)")
             val executor = Executors.newSingleThreadExecutor()
@@ -315,12 +314,12 @@ class MainActivity : Activity() {
     }
 
     fun displayContent() {
-        println(url.getUrlItemType())
+        println(URL.fetchUrlItemType())
         Log.d("", "System.out.println(url.getUrlItemType())")
         if (connOk) {
             (cntntLL as LinearLayout?)!!.removeAllViews()
             lnTV = TextView(this)
-            when (url.getUrlItemType()) {
+            when (URL.fetchUrlItemType()) {
                 '0' -> {
                     displayTxtFile()
                 }
@@ -420,11 +419,11 @@ class MainActivity : Activity() {
     }
 
     fun setUrlParts(lineSplit: Array<String>, itemType: Char) {
-        url.setUrlItemType(itemType)
-        url.setUrlPath(lineSplit[1])
-        url.setUrlHost(lineSplit[2])
-        url.setUrlPort(lineSplit[3].toInt())
-        url!!.makeURLfromParts()
+        URL.setUrlItemType(itemType)
+        URL.setUrlPath(lineSplit[1])
+        URL.setUrlHost(lineSplit[2])
+        URL.setUrlPort(lineSplit[3].toInt())
+        URL.makeURLfromParts()
     }
 
     fun displayMessage(ch: Char, param: String?) {
@@ -440,7 +439,7 @@ class MainActivity : Activity() {
             }
 
             'l' -> getString(R.string.loading) + " " + param
-            'e' -> when (url.getErrorCode()) {
+            'e' -> when (URL.fetchErrorCode()) {
                 1 -> getString(R.string.invalid_protocol)
                 2 -> getString(R.string.host_not_found)
                 3 -> getString(R.string.invalid_port)
@@ -468,10 +467,10 @@ class MainActivity : Activity() {
                 try {
                     socket = Socket()
                     Log.d("", "socket = new Socket()")
-                    socket.connect(InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT)
+                    socket.connect(InetSocketAddress(URL.fetchUrlHost(), URL.fetchUrlPort()), CONNECTION_TIMEOUT)
                     Log.d("", "socket.connect(new InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT)")
                 } catch (e: IOException) {
-                    url.setErrorCode(2)
+                    URL.setErrorCode(2)
                     connOk = false
                     e.printStackTrace()
                     Log.d("socket", "e.printStackTrace()")
@@ -479,7 +478,7 @@ class MainActivity : Activity() {
                 }
                 sckt = socket
                 prntWrtr = PrintWriter(sckt!!.getOutputStream())
-                prntWrtr.write(url.getUrlPath() + url.getUrlQuery() + "\r\n")
+                prntWrtr!!.write(URL.fetchUrlPath() + URL.fetchUrlQuery() + "\r\n")
                 prntWrtr!!.flush()
                 var read: Int
                 var tl = ""
@@ -513,7 +512,7 @@ class MainActivity : Activity() {
                     }
                     if (!clickDriven) {
                         if (isBinary) {
-                            url.setUrlItemType('9')
+                            URL.setUrlItemType('9')
                         } else {
                             i = 0
                             var count = 0
@@ -526,18 +525,18 @@ class MainActivity : Activity() {
                                 i++
                             }
                             if (count != 3) {
-                                url.setUrlItemType('0')
+                                URL.setUrlItemType('0')
                             } else {
-                                url.setUrlItemType('1')
+                                URL.setUrlItemType('1')
                             }
                         }
                     }
                 } else {
-                    url.setErrorCode(4)
+                    URL.setErrorCode(4)
                     connOk = false
                     return
                 }
-                when (url.getUrlItemType()) {
+                when (URL.fetchUrlItemType()) {
                     '0', '1', '7' -> {
                         if (bfrdRdr!!.readLine().also { tempLine = it } != null) {
                             lnArLst!!.add(tl + tempLine)
@@ -550,7 +549,7 @@ class MainActivity : Activity() {
                     else -> {
                         fileDnlded = false
                         val bytes = ByteArray(1024)
-                        fileName = url.getUrlPath().substring(url.getUrlPath().lastIndexOf("/") + 1)
+                        fileName = URL.fetchUrlPath()!!.substring(URL.fetchUrlPath()!!.lastIndexOf("/") + 1)
                         val fileStream = Files.newOutputStream(Paths.get("$dnldDir/$fileName"))
                         fileStream.write(fileSig, 0, read)
                         while (inputStream.read(bytes).also { read = it } != -1) {
@@ -563,7 +562,7 @@ class MainActivity : Activity() {
                 }
                 inputStream.close()
             } catch (e: IOException) {
-                url.setErrorCode(2)
+                URL.setErrorCode(2)
                 connOk = false
                 e.printStackTrace()
                 Log.d("url", "e.printStackTrace()")
@@ -580,12 +579,12 @@ class MainActivity : Activity() {
                 closeComponents()
                 connOk = true
                 if (url != null) {
-                    url!!.makeURLfromParts()
+                    URL.makeURLfromParts()
                     Log.d("url", "makeURLfromParts()")
-                    adrUrlStr = url.getUrl()
+                    adrUrlStr = URL.fetchUrl()
                     if (!backPressed) {
-                        hstryArLst!!.add(url.getUrl())
-                        itmTypArLst!!.add(url.getUrlItemType().toString())
+                        hstryArLst!!.add(URL.fetchUrl())
+                        itmTypArLst!!.add(URL.fetchUrlItemType().toString())
                     } else {
                         backPressed = false
                         Log.d("", "backPressed = false")

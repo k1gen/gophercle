@@ -39,9 +39,10 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     namespace = "org.biotstoiq.gophercle"
     ndkVersion = "25.2.9519653"
 }

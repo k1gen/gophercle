@@ -65,10 +65,6 @@ class URL internal constructor(url: String) {
         return true
     }
 
-    fun makeURLfromParts() {
-        url = protocol + "://" + urlHost + ":" + urlPort.toString() + "/" + urlItemType.toString() + urlPath
-    }
-
     fun extractPort(string: String): Boolean {
         val port: Int
         port = try {
@@ -84,23 +80,89 @@ class URL internal constructor(url: String) {
         return true
     }
 
-    var errorCode: Int = 0
-    var url: String = ""
-        private set
-
     companion object {
+        @JvmField
+        var errorCode: Int = 0
+
+        @JvmField
+        var url: String = ""
+
+        @JvmField
         var protocol: String? = null
+
+        @JvmField
         var urlHost: String? = null
-            private set
+
+        @JvmField
         var urlPort: Int = 0
-            private set
+
+        @JvmField
         var urlPath: String? = null
-            private set
+
+        @JvmField
         var urlQuery: String? = null
-            private set
+
+        @JvmField
         var urlItemType: Char = 0.toChar()
-            private set
+
+        @JvmField
         var isUrlOkay: Boolean = false
-            private set
+
+        @JvmStatic
+        fun setErrorCode(ec: Int) {
+            errorCode = ec
+        }
+
+        fun fetchErrorCode(): Int {
+            return errorCode
+        }
+
+        fun fetchUrl(): String {
+            return url
+        }
+
+        fun isUrlOkay(): Boolean {
+            return isUrlOkay
+        }
+
+        fun fetchUrlHost(): String? {
+            return urlHost
+        }
+
+        fun setUrlHost(urlHst: String) {
+            urlHost = urlHst
+        }
+
+        fun fetchUrlPort(): Int {
+            return urlPort
+        }
+
+        fun setUrlPort(urlPrt: Int) {
+            urlPort = urlPrt
+        }
+
+        fun fetchUrlPath(): String? {
+            return urlPath
+        }
+
+        fun setUrlPath(urlPth: String) {
+            urlPath = urlPth
+        }
+
+        fun fetchUrlQuery(): String? {
+            return urlQuery
+        }
+
+        fun fetchUrlItemType(): Char {
+            return urlItemType
+        }
+
+        fun setUrlItemType(itmTyp: Char) {
+            urlItemType = itmTyp
+        }
+
+        fun makeURLfromParts() {
+            url = "$protocol://$urlHost:$urlPort/$urlItemType$urlPath"
+        }
     }
 }
