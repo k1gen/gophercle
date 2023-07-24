@@ -19,7 +19,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.preference.PreferenceManager
-import org.biotstoiq.gophercle.URL.Companion.url
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -41,6 +40,7 @@ class MainActivity : Activity() {
         var url: URL? = null
         var sckt: Socket? = null
     }
+
     var connOk = false
     var adrUrlStr: String? = null
     var tempLine: String? = null
@@ -130,6 +130,8 @@ class MainActivity : Activity() {
                 adrUrlStr = adrUrlValET?.text?.toString()
                 if (adrUrlStr != null) {
                     URL.initializeURL(adrUrlStr!!)
+                    Log.d("Debug", "Host: ${URL.fetchUrlHost()}, Port: ${URL.fetchUrlPort()}")  // Add this debug log
+
                 }
                 if (URL.isUrlOkay) {
                     Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
@@ -188,8 +190,10 @@ class MainActivity : Activity() {
         adrBtn = findViewById(R.id.adrBtn)
         rfrshBtn = findViewById(R.id.rfrshBtn)
         bkBtn = findViewById(R.id.bkBtn)
-        lprms = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT)
+        lprms = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         txtSizInt = shrdPrfrncs!!.getInt("txt_siz", 14)
         srchUrlStr = shrdPrfrncs?.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs")
         setTheme()
@@ -198,7 +202,8 @@ class MainActivity : Activity() {
     fun showBkmrks() {
         (cntntLL as LinearLayout?)!!.removeAllViews()
         val bkmrksStr = shrdPrfrncs!!.getString("bkmrks", "")
-        val bkmrksSplt = bkmrksStr!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val bkmrksSplt =
+            bkmrksStr!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         for (j in bkmrksSplt.indices) {
             val url = bkmrksSplt[j]
             Log.d("url", "bkmrksSplt[j]")
@@ -212,8 +217,17 @@ class MainActivity : Activity() {
                     connOk = false
                     clickDriven = false
                     dlgBldr = AlertDialog.Builder(this)
-                    dlgBldr!!.setPositiveButton(R.string.go) { dialogInterface: DialogInterface?, i: Int -> callInitConnection(url, '\u0000') }
-                    dlgBldr!!.setNegativeButton(R.string.rmv) { dialogInterface: DialogInterface?, i: Int -> rmvBkmrk(j) }
+                    dlgBldr!!.setPositiveButton(R.string.go) { dialogInterface: DialogInterface?, i: Int ->
+                        callInitConnection(
+                            url,
+                            '\u0000'
+                        )
+                    }
+                    dlgBldr!!.setNegativeButton(R.string.rmv) { dialogInterface: DialogInterface?, i: Int ->
+                        rmvBkmrk(
+                            j
+                        )
+                    }
                     alrtDlg = dlgBldr!!.create()
                     alrtDlg?.show()
                 }
@@ -224,7 +238,8 @@ class MainActivity : Activity() {
 
     fun rmvBkmrk(pos: Int) {
         var bkmrksStr = shrdPrfrncs!!.getString("bkmrks", "")
-        val bkmrksSplt = bkmrksStr!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val bkmrksSplt =
+            bkmrksStr!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         bkmrksStr = ""
         var i = 0
         for (bkmrkSpltStr in bkmrksSplt) {
@@ -240,7 +255,8 @@ class MainActivity : Activity() {
 
     fun adBkmrk(url: String?) {
         val bkmrksStr = shrdPrfrncs!!.getString("bkmrks", "")
-        val bkmrksSplt = bkmrksStr!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val bkmrksSplt =
+            bkmrksStr!!.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         for (bkmrkUrlStr in bkmrksSplt) {
             if (url == bkmrkUrlStr) {
                 return
@@ -375,7 +391,8 @@ class MainActivity : Activity() {
                             val finalI = i
                             itmBtn!!.setOnClickListener { view: View? ->
                                 clickDriven = true
-                                val lineSplit = lnArLst!![finalI]!!.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                                val lineSplit = lnArLst!![finalI]!!.split("\t".toRegex())
+                                    .dropLastWhile { it.isEmpty() }.toTypedArray()
                                 val tempUrl = lineSplit[2] + ":" + lineSplit[3] + lineSplit[1]
                                 val itmTyp = lineSplit[0][0]
                                 setUrlParts(lineSplit, itemType)
@@ -384,9 +401,11 @@ class MainActivity : Activity() {
                                     '7' -> {
                                         dlgBldr = AlertDialog.Builder(this)
                                         dlgBldr!!.setView(R.layout.alert_dialog_options)
-                                        dlgBldr!!.setNegativeButton(R.string.cncl
+                                        dlgBldr!!.setNegativeButton(
+                                            R.string.cncl
                                         ) { dialogInterface: DialogInterface, i1: Int -> dialogInterface.cancel() }
-                                        dlgBldr!!.setPositiveButton(R.string.srch
+                                        dlgBldr!!.setPositiveButton(
+                                            R.string.srch
                                         ) { dialogInterface: DialogInterface?, i1: Int -> initiateSearch() }
                                         alrtDlg = dlgBldr!!.create()
                                         alrtDlg?.show()
@@ -399,12 +418,21 @@ class MainActivity : Activity() {
 
                                     else -> {
                                         dlgBldr = AlertDialog.Builder(this)
-                                        dlgBldr!!.setMessage(getString(R.string.fnm)
-                                                + " " + lineSplit[1]
-                                            .substring(lineSplit[1].lastIndexOf("/") + 1))
-                                        dlgBldr!!.setPositiveButton(R.string.dnld
-                                        ) { dialogInterface: DialogInterface?, i1: Int -> callInitConnection(tempUrl, itmTyp) }
-                                        dlgBldr!!.setNegativeButton(R.string.cncl
+                                        dlgBldr!!.setMessage(
+                                            getString(R.string.fnm)
+                                                    + " " + lineSplit[1]
+                                                .substring(lineSplit[1].lastIndexOf("/") + 1)
+                                        )
+                                        dlgBldr!!.setPositiveButton(
+                                            R.string.dnld
+                                        ) { dialogInterface: DialogInterface?, i1: Int ->
+                                            callInitConnection(
+                                                tempUrl,
+                                                itmTyp
+                                            )
+                                        }
+                                        dlgBldr!!.setNegativeButton(
+                                            R.string.cncl
                                         ) { dialogInterface: DialogInterface, i1: Int -> dialogInterface.cancel() }
                                         alrtDlg = dlgBldr!!.create()
                                         alrtDlg?.show()
@@ -480,11 +508,17 @@ class MainActivity : Activity() {
                 try {
 
                     socket = Socket()
-                    Log.d("", "socket = new Socket()")
-                    println("Parsed host: ${URL.fetchUrlHost()}")
-                    println("Parsed port: ${URL.fetchUrlPort()}")
-                    socket.connect(InetSocketAddress(URL.fetchUrlHost(), URL.fetchUrlPort()), CONNECTION_TIMEOUT)
-                    Log.d("", "socket.connect(new InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT)")
+                    val host = URL.fetchUrlHost()
+                    Log.d("Socket Connection", "Host: $host, Port: $URL.fetchUrlPort()")
+                    if (host != null) {
+                        socket.connect(
+                            InetSocketAddress(host, URL.fetchUrlPort()),
+                            CONNECTION_TIMEOUT
+                        )
+                    } else {
+
+                        Log.d("Socket Connection", "Host: $host, Port: $URL.fetchUrlPort()")
+                    }
                 } catch (e: IOException) {
                     URL.errorCode = 2
                     connOk = false
@@ -565,7 +599,8 @@ class MainActivity : Activity() {
                     else -> {
                         fileDnlded = false
                         val bytes = ByteArray(1024)
-                        fileName = URL.fetchUrlPath()!!.substring(URL.fetchUrlPath()!!.lastIndexOf("/") + 1)
+                        fileName = URL.fetchUrlPath()!!
+                            .substring(URL.fetchUrlPath()!!.lastIndexOf("/") + 1)
                         val fileStream = Files.newOutputStream(Paths.get("$dnldDir/$fileName"))
                         fileStream.write(fileSig, 0, read)
                         while (inputStream.read(bytes).also { read = it } != -1) {
