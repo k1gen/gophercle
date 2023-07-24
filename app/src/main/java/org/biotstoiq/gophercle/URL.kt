@@ -1,72 +1,72 @@
 package org.biotstoiq.gophercle
 
 @Suppress("SpellCheckingInspection")
-class URL internal constructor(var url: String) {
+class URL internal constructor(url: String) {
     init {
         isUrlOkay = extractURLParts()
     }
 
     fun extractURLParts(): Boolean {
         var index: Int
-        if (Companion.url.contains("://")) {
-            index = Companion.url.indexOf(':')
-            protocol = Companion.url.substring(0, index)
+        if (url.contains("://")) {
+            index = url.indexOf(':')
+            protocol = url.substring(0, index)
             if (protocol != "gopher") {
-                Companion.errorCode = 1
+                errorCode = 1
                 return false
             }
-            Companion.url = Companion.url.substring(index + 3)
+            url = url.substring(index + 3)
         } else {
             protocol = "gopher"
         }
-        index = Companion.url.indexOf(":")
+        index = url.indexOf(":")
         if (index != -1) {
-            urlHost = Companion.url.substring(0, index)
+            urlHost = url.substring(0, index)
             val extractedPort: Boolean
-            if (Companion.url.contains("/")) {
-                extractedPort = extractPort(Companion.url.substring(index + 1, Companion.url.indexOf("/").also { index = it }))
-                Companion.url = Companion.url.substring(index)
+            if (url.contains("/")) {
+                extractedPort = extractPort(url.substring(index + 1, url.indexOf("/").also { index = it }))
+                url = url.substring(index)
             } else {
-                extractedPort = extractPort(Companion.url.substring(index + 1))
-                Companion.url = ""
+                extractedPort = extractPort(url.substring(index + 1))
+                url = ""
             }
             if (!extractedPort) {
-                Companion.errorCode = 3
+                errorCode = 3
                 return false
             }
         } else {
             urlPort = 70
-            index = Companion.url.indexOf("/")
+            index = url.indexOf("/")
             if (index != -1) {
-                urlHost = Companion.url.substring(0, index)
-                Companion.url = Companion.url.substring(index)
+                urlHost = url.substring(0, index)
+                url = url.substring(index)
             } else {
-                urlHost = Companion.url
-                Companion.url = ""
+                urlHost = url
+                url = ""
             }
         }
-        if (Companion.url.length > 1) {
-            Companion.url = Companion.url.substring(1)
-            index = Companion.url.indexOf('/')
-            if (index == 1) {
-                urlPath = Companion.url.substring(index)
+        if (url.length > 1) {
+            url = url.substring(1)
+            index = url.indexOf('/')
+            urlPath = if (index == 1) {
+                url.substring(index)
             } else {
-                urlPath = "/" + Companion.url
+                "/" + url
             }
         } else {
             urlPath = "/"
         }
         index = urlPath!!.indexOf('\t')
-        if (index != -1) {
-            urlQuery = urlPath!!.substring(index)
+        urlQuery = if (index != -1) {
+            urlPath!!.substring(index)
         } else {
-            urlQuery = ""
+            ""
         }
         return true
     }
 
     fun makeURLfromParts() {
-        Companion.url = protocol + "://" + urlHost + ":" + urlPort.toString() + "/" + urlItemType.toString() + urlPath
+        url = protocol + "://" + urlHost + ":" + urlPort.toString() + "/" + urlItemType.toString() + urlPath
     }
 
     fun extractPort(string: String): Boolean {
@@ -84,40 +84,23 @@ class URL internal constructor(var url: String) {
         return true
     }
 
-    var errorCode: Int
-        get() = Companion.errorCode
-        set(ec) {
-            Companion.errorCode = ec
-        }
-    val url: String
-        get() = Companion.url
+    var errorCode: Int = 0
+    var url: String = ""
+        private set
 
     companion object {
         var protocol: String? = null
         var urlHost: String? = null
-            get() = Companion.field
-            set(urlHst) {
-                urlHost = urlHst
-            }
-        var urlPort = 0
-            get() = Companion.field
-            set(urlPrt) {
-                urlPort = urlPrt
-            }
+            private set
+        var urlPort: Int = 0
+            private set
         var urlPath: String? = null
-            get() = Companion.field
-            set(urlPth) {
-                urlPath = urlPth
-            }
+            private set
         var urlQuery: String? = null
-            get() = Companion.field
-        var urlItemType = 0.toChar()
-            get() = Companion.field
-            set(itmTyp) {
-                urlItemType = itmTyp
-            }
-        var errorCode = 0
-        var isUrlOkay: Boolean
-            get() = Companion.field
+            private set
+        var urlItemType: Char = 0.toChar()
+            private set
+        var isUrlOkay: Boolean = false
+            private set
     }
 }

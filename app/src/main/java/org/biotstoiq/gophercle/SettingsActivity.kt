@@ -35,17 +35,17 @@ class SettingsActivity : Activity() {
         srchUrlSvdValTV = findViewById(R.id.srchUrlSvdValTV)
         srchUrlSvdValLL = findViewById(R.id.srchUrlSvdValLL)
         shrdPrfrncs = PreferenceManager.getDefaultSharedPreferences(this)
-        txtSizInt = shrdPrfrncs.getInt("txt_siz", 14)
-        srchUrlStr = shrdPrfrncs.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs")
-        val editor = shrdPrfrncs.edit()
-        txtSzeValTV.setText(txtSizInt.toString())
-        srchUrlSvdValTV.setText(srchUrlStr)
-        saveBtn.setOnClickListener(View.OnClickListener { v: View? ->
+        txtSizInt = shrdPrfrncs!!.getInt("txt_siz", 14)
+        srchUrlStr = shrdPrfrncs!!.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs")
+        val editor = shrdPrfrncs!!.edit()
+        txtSzeValTV?.text = txtSizInt.toString()
+        srchUrlSvdValTV?.text = srchUrlStr
+        saveBtn?.setOnClickListener { v: View? ->
             editor.putInt("txt_siz", txtSizInt)
             editor.putString("srch_url", srchUrlStr)
             editor.apply()
-        })
-        textSizeLL.setOnClickListener(View.OnClickListener { view: View? ->
+        }
+        textSizeLL?.setOnClickListener { view: View? ->
             dlgBldr = AlertDialog.Builder(this)
             dlgBldr!!.setTitle(R.string.txt_size)
             dlgBldr!!.setView(R.layout.activity_numberpicker)
@@ -53,16 +53,16 @@ class SettingsActivity : Activity() {
             ) { dialogInterface: DialogInterface, i: Int -> dialogInterface.cancel() }
             dlgBldr!!.setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
                 txtSizInt = txtSzeNP!!.value
-                txtSzeValTV.setText(txtSizInt.toString())
+                txtSzeValTV?.text = txtSizInt.toString()
             }
             alrtDlg = dlgBldr!!.create()
-            alrtDlg.show()
-            txtSzeNP = alrtDlg.findViewById(R.id.txtSzeNP)
-            txtSzeNP.setMaxValue(20)
-            txtSzeNP.setMinValue(8)
-            txtSzeNP.setValue(txtSizInt)
-        })
-        srchUrlSvdValLL.setOnClickListener(View.OnClickListener { view: View? ->
+            alrtDlg?.show()
+            txtSzeNP = alrtDlg?.findViewById(R.id.txtSzeNP)
+            txtSzeNP?.maxValue = 20
+            txtSzeNP?.minValue = 8
+            txtSzeNP?.value = txtSizInt
+        }
+        srchUrlSvdValLL?.setOnClickListener { view: View? ->
             dlgBldr = AlertDialog.Builder(this)
             dlgBldr!!.setTitle(R.string.url)
             dlgBldr!!.setView(R.layout.alert_dialog_url)
@@ -70,11 +70,11 @@ class SettingsActivity : Activity() {
             ) { dialogInterface: DialogInterface, i: Int -> dialogInterface.cancel() }
             dlgBldr!!.setPositiveButton(R.string.ok) { dialogInterface: DialogInterface?, i: Int ->
                 srchUrlStr = srchUrlValET!!.text.toString()
-                srchUrlSvdValTV.setText(srchUrlStr)
+                srchUrlSvdValTV?.text = srchUrlStr
             }
             alrtDlg = dlgBldr!!.create()
-            alrtDlg.show()
-            srchUrlValET = alrtDlg.findViewById(R.id.adrUrlValET)
-        })
+            alrtDlg?.show()
+            srchUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET)
+        }
     }
 }

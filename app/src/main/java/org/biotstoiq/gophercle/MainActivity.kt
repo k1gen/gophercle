@@ -30,6 +30,8 @@ import java.nio.file.Paths
 import java.util.StringTokenizer
 import java.util.concurrent.Executors
 
+private const val CONNECTION_TIMEOUT = 5000
+
 class MainActivity : Activity() {
     var connOk = false
     var adrUrlStr: String? = null
@@ -87,28 +89,28 @@ class MainActivity : Activity() {
             dlgBldr!!.setNeutralButton(R.string.stngs) { dialogInterface: DialogInterface?, i: Int -> openSettings() }
             dlgBldr!!.setPositiveButton(R.string.srch) { dialogInterface: DialogInterface?, i1: Int -> initiateSearch() }
             alrtDlg = dlgBldr!!.create()
-            alrtDlg.show()
-            srchUrlValTV = alrtDlg.findViewById(R.id.srchUrlValTV)
-            srchUrlValTV.setText(srchUrlStr)
-            adBkmrkBtn = alrtDlg.findViewById(R.id.adBkmrkBtn)
-            shrBtn = alrtDlg.findViewById(R.id.shrBtn)
+            alrtDlg?.show()
+            srchUrlValTV = alrtDlg?.findViewById(R.id.srchUrlValTV)
+            srchUrlValTV?.text = srchUrlStr
+            adBkmrkBtn = alrtDlg?.findViewById(R.id.adBkmrkBtn)
+            shrBtn = alrtDlg?.findViewById(R.id.shrBtn)
             if (onBkmrkPg) {
-                adBkmrkBtn.setVisibility(View.GONE)
+                adBkmrkBtn?.visibility = View.GONE
             } else {
-                adBkmrkBtn.setOnClickListener(View.OnClickListener { view1: View? ->
+                adBkmrkBtn?.setOnClickListener { view1: View? ->
                     adBkmrk(url.getUrl())
-                    alrtDlg.dismiss()
-                })
+                    alrtDlg?.dismiss()
+                }
             }
-            shrBtn.setOnClickListener(View.OnClickListener { view1: View? ->
+            shrBtn?.setOnClickListener { view1: View? ->
                 if (url != null) {
                     val shrIntnt = Intent(Intent.ACTION_SEND)
                     shrIntnt.setType("text/plain")
                     shrIntnt.putExtra(Intent.EXTRA_TEXT, url.getUrl())
                     startActivity(Intent.createChooser(shrIntnt, getString(R.string.shr)))
                 }
-            })
-            queryET = alrtDlg.findViewById(R.id.qryET)
+            }
+            queryET = alrtDlg?.findViewById(R.id.qryET)
         }
         adrBtn!!.setOnClickListener { view: View? ->
             dlgBldr = AlertDialog.Builder(this)
@@ -123,13 +125,13 @@ class MainActivity : Activity() {
             }
             dlgBldr!!.setNegativeButton(R.string.cncl) { dialogInterface: DialogInterface, i: Int -> dialogInterface.cancel() }
             alrtDlg = dlgBldr!!.create()
-            alrtDlg.show()
-            adrUrlValET = alrtDlg.findViewById(R.id.adrUrlValET)
+            alrtDlg?.show()
+            adrUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET)
             if (url != null && url.isUrlOkay()) {
                 adrUrlValET.setText(url.getUrl())
                 Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
             } else {
-                adrUrlValET.setText(adrUrlStr)
+                adrUrlValET?.setText(adrUrlStr)
                 Log.d("adrUrlValET", "else")
             }
         }
@@ -165,7 +167,7 @@ class MainActivity : Activity() {
 
     fun initResources() {
         shrdPrfrncs = PreferenceManager.getDefaultSharedPreferences(this)
-        prfEdtr = shrdPrfrncs.edit()
+        prfEdtr = shrdPrfrncs?.edit()
         mainLL = findViewById(R.id.mainLinearLayout)
         cntntLL = findViewById(R.id.contentLinearLayout)
         stngsBtn = findViewById(R.id.stngsBtn)
@@ -175,8 +177,8 @@ class MainActivity : Activity() {
         bkBtn = findViewById(R.id.bkBtn)
         lprms = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
-        txtSizInt = shrdPrfrncs.getInt("txt_siz", 14)
-        srchUrlStr = shrdPrfrncs.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs")
+        txtSizInt = shrdPrfrncs!!.getInt("txt_siz", 14)
+        srchUrlStr = shrdPrfrncs?.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs")
         setTheme()
     }
 
@@ -200,7 +202,7 @@ class MainActivity : Activity() {
                     dlgBldr!!.setPositiveButton(R.string.go) { dialogInterface: DialogInterface?, i: Int -> callInitConnection(url, '\u0000') }
                     dlgBldr!!.setNegativeButton(R.string.rmv) { dialogInterface: DialogInterface?, i: Int -> rmvBkmrk(j) }
                     alrtDlg = dlgBldr!!.create()
-                    alrtDlg.show()
+                    alrtDlg?.show()
                 }
                 (cntntLL as LinearLayout?)!!.addView(bkmrkBtn)
             }
@@ -254,7 +256,7 @@ class MainActivity : Activity() {
     private fun callInitConnection(inputURL: String, itmTyp: Char) {
         closeComponents()
         onBkmrkPg = false
-        url = URL(inputURL)
+        url = URL()
         Log.d("url", "new URL(inputURL)")
         if (clickDriven) {
             url.setUrlItemType(itmTyp)
@@ -375,12 +377,12 @@ class MainActivity : Activity() {
                                         dlgBldr!!.setPositiveButton(R.string.srch
                                         ) { dialogInterface: DialogInterface?, i1: Int -> initiateSearch() }
                                         alrtDlg = dlgBldr!!.create()
-                                        alrtDlg.show()
-                                        srchUrlValTV = alrtDlg.findViewById(R.id.srchUrlValTV)
-                                        adBkmrkBtn = alrtDlg.findViewById(R.id.adBkmrkBtn)
-                                        adBkmrkBtn.setVisibility(View.GONE)
-                                        queryET = alrtDlg.findViewById(R.id.qryET)
-                                        srchUrlValTV.setText(tempUrl)
+                                        alrtDlg?.show()
+                                        srchUrlValTV = alrtDlg?.findViewById(R.id.srchUrlValTV)
+                                        adBkmrkBtn = alrtDlg?.findViewById(R.id.adBkmrkBtn)
+                                        adBkmrkBtn?.visibility = View.GONE
+                                        queryET = alrtDlg?.findViewById(R.id.qryET)
+                                        srchUrlValTV?.text = tempUrl
                                     }
 
                                     else -> {
@@ -393,7 +395,7 @@ class MainActivity : Activity() {
                                         dlgBldr!!.setNegativeButton(R.string.cncl
                                         ) { dialogInterface: DialogInterface, i1: Int -> dialogInterface.cancel() }
                                         alrtDlg = dlgBldr!!.create()
-                                        alrtDlg.show()
+                                        alrtDlg?.show()
                                     }
                                 }
                             }
@@ -466,7 +468,7 @@ class MainActivity : Activity() {
                 try {
                     socket = Socket()
                     Log.d("", "socket = new Socket()")
-                    socket.connect(InetSocketAddress(url.getUrlHost(), url.getUrlPort()), Companion.CONNECTION_TIMEOUT)
+                    socket.connect(InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT)
                     Log.d("", "socket.connect(new InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT)")
                 } catch (e: IOException) {
                     url.setErrorCode(2)
@@ -600,10 +602,6 @@ class MainActivity : Activity() {
                     }
                 }
             }
-        }
-
-        companion object {
-            private const val CONNECTION_TIMEOUT = 5000
         }
     }
 
