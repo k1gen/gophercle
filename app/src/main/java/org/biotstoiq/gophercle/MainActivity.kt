@@ -19,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.preference.PreferenceManager
+import org.biotstoiq.gophercle.URL.Companion.url
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -32,7 +33,14 @@ import java.util.concurrent.Executors
 
 private const val CONNECTION_TIMEOUT = 5000
 
+
 class MainActivity : Activity() {
+    companion object {
+        var bfrdRdr: BufferedReader? = null
+        var prntWrtr: PrintWriter? = null
+        var url: URL? = null
+        var sckt: Socket? = null
+    }
     var connOk = false
     var adrUrlStr: String? = null
     var tempLine: String? = null
@@ -77,6 +85,7 @@ class MainActivity : Activity() {
         itmTypArLst = ArrayList()
         initResources()
         showBkmrks()
+        adrUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET)
         dnldDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
         bkmrkBtn!!.setOnClickListener { view: View? ->
             onBkmrkPg = true
@@ -112,29 +121,33 @@ class MainActivity : Activity() {
             }
             queryET = alrtDlg?.findViewById(R.id.qryET)
         }
-        adrBtn!!.setOnClickListener { view: View? ->
+        adrBtn?.setOnClickListener { view: View? ->
             dlgBldr = AlertDialog.Builder(this)
-            dlgBldr!!.setView(R.layout.alert_dialog_url)
-            dlgBldr!!.setPositiveButton(R.string.go) { dialogInterface: DialogInterface?, i: Int ->
+            dlgBldr?.setView(R.layout.alert_dialog_url)
+            dlgBldr?.setPositiveButton(R.string.go) { dialogInterface: DialogInterface?, i: Int ->
                 connOk = false
                 clickDriven = false
-                adrUrlStr = adrUrlValET!!.text.toString()
+                adrUrlStr = adrUrlValET?.text?.toString()
+                if (adrUrlStr != null) {
+                    URL.initializeURL(adrUrlStr!!)
+                }
+                if (URL.isUrlOkay) {
+                    Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
+                } else {
+                    adrUrlValET?.setText(adrUrlStr)
+                    Log.d("adrUrlValET", "else")
+                }
                 // Create a new thread to execute the ConnectAsync task
                 val thread = Thread(ConnectAsync())
                 thread.start()
             }
-            dlgBldr!!.setNegativeButton(R.string.cncl) { dialogInterface: DialogInterface, i: Int -> dialogInterface.cancel() }
-            alrtDlg = dlgBldr!!.create()
+            dlgBldr?.setNegativeButton(R.string.cncl) { dialogInterface: DialogInterface, i: Int -> dialogInterface.cancel() }
+            alrtDlg = dlgBldr?.create()
             alrtDlg?.show()
-            adrUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET)
-            if (url != null && URL.isUrlOkay()) {
-                adrUrlValET?.setText(URL.fetchUrl())
-                Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
-            } else {
-                adrUrlValET?.setText(adrUrlStr)
-                Log.d("adrUrlValET", "else")
-            }
         }
+
+
+
         rfrshBtn!!.setOnClickListener { view: View? ->
             if (adrUrlStr != "") {
                 clickDriven = false
@@ -176,7 +189,7 @@ class MainActivity : Activity() {
         rfrshBtn = findViewById(R.id.rfrshBtn)
         bkBtn = findViewById(R.id.bkBtn)
         lprms = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
+            ViewGroup.LayoutParams.WRAP_CONTENT)
         txtSizInt = shrdPrfrncs!!.getInt("txt_siz", 14)
         srchUrlStr = shrdPrfrncs?.getString("srch_url", "gopher://gopher.floodgap.com/v2/vs")
         setTheme()
@@ -258,9 +271,9 @@ class MainActivity : Activity() {
         onBkmrkPg = false
         Log.d("url", "new URL(inputURL)")
         if (clickDriven) {
-            URL.setUrlItemType(itmTyp)
+            URL.urlItemType = itmTyp
         }
-        if (URL.isUrlOkay()) {
+        if (URL.isUrlOkay) {
             displayMessage('l', inputURL)
             Log.d("url", "displayMessage('l', inputURL)")
             val executor = Executors.newSingleThreadExecutor()
@@ -388,7 +401,7 @@ class MainActivity : Activity() {
                                         dlgBldr = AlertDialog.Builder(this)
                                         dlgBldr!!.setMessage(getString(R.string.fnm)
                                                 + " " + lineSplit[1]
-                                                .substring(lineSplit[1].lastIndexOf("/") + 1))
+                                            .substring(lineSplit[1].lastIndexOf("/") + 1))
                                         dlgBldr!!.setPositiveButton(R.string.dnld
                                         ) { dialogInterface: DialogInterface?, i1: Int -> callInitConnection(tempUrl, itmTyp) }
                                         dlgBldr!!.setNegativeButton(R.string.cncl
@@ -419,10 +432,10 @@ class MainActivity : Activity() {
     }
 
     fun setUrlParts(lineSplit: Array<String>, itemType: Char) {
-        URL.setUrlItemType(itemType)
-        URL.setUrlPath(lineSplit[1])
-        URL.setUrlHost(lineSplit[2])
-        URL.setUrlPort(lineSplit[3].toInt())
+        URL.urlItemType = itemType
+        URL.urlPath = lineSplit[1]
+        URL.urlHost = lineSplit[2]
+        URL.urlPort = lineSplit[3].toInt()
         URL.makeURLfromParts()
     }
 
@@ -465,12 +478,15 @@ class MainActivity : Activity() {
             try {
                 lnArLst!!.clear()
                 try {
+
                     socket = Socket()
                     Log.d("", "socket = new Socket()")
+                    println("Parsed host: ${URL.fetchUrlHost()}")
+                    println("Parsed port: ${URL.fetchUrlPort()}")
                     socket.connect(InetSocketAddress(URL.fetchUrlHost(), URL.fetchUrlPort()), CONNECTION_TIMEOUT)
                     Log.d("", "socket.connect(new InetSocketAddress(url.getUrlHost(), url.getUrlPort()), CONNECTION_TIMEOUT)")
                 } catch (e: IOException) {
-                    URL.setErrorCode(2)
+                    URL.errorCode = 2
                     connOk = false
                     e.printStackTrace()
                     Log.d("socket", "e.printStackTrace()")
@@ -512,7 +528,7 @@ class MainActivity : Activity() {
                     }
                     if (!clickDriven) {
                         if (isBinary) {
-                            URL.setUrlItemType('9')
+                            URL.urlItemType = 9.toChar()
                         } else {
                             i = 0
                             var count = 0
@@ -525,14 +541,14 @@ class MainActivity : Activity() {
                                 i++
                             }
                             if (count != 3) {
-                                URL.setUrlItemType('0')
+                                URL.urlItemType = '0'
                             } else {
-                                URL.setUrlItemType('1')
+                                URL.urlItemType = '1'
                             }
                         }
                     }
                 } else {
-                    URL.setErrorCode(4)
+                    URL.errorCode = 4
                     connOk = false
                     return
                 }
@@ -562,7 +578,7 @@ class MainActivity : Activity() {
                 }
                 inputStream.close()
             } catch (e: IOException) {
-                URL.setErrorCode(2)
+                URL.errorCode = 2
                 connOk = false
                 e.printStackTrace()
                 Log.d("url", "e.printStackTrace()")
@@ -607,14 +623,14 @@ class MainActivity : Activity() {
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         AlertDialog.Builder(this)
-                .setTitle("Exit")
-                .setMessage(R.string.cnfrmtn)
-                .setPositiveButton("Yes") { dialog: DialogInterface?, which: Int ->
-                    val pid = Process.myPid()
-                    Process.killProcess(pid)
-                }
-                .setNegativeButton("No", null)
-                .show()
+            .setTitle("Exit")
+            .setMessage(R.string.cnfrmtn)
+            .setPositiveButton("Yes") { dialog: DialogInterface?, which: Int ->
+                val pid = Process.myPid()
+                Process.killProcess(pid)
+            }
+            .setNegativeButton("No", null)
+            .show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -649,10 +665,5 @@ class MainActivity : Activity() {
         setTheme()
     }
 
-    companion object {
-        var bfrdRdr: BufferedReader? = null
-        var prntWrtr: PrintWriter? = null
-        var url: URL? = null
-        var sckt: Socket? = null
-    }
+
 }
