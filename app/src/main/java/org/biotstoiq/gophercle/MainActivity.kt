@@ -85,7 +85,6 @@ class MainActivity : Activity() {
         itmTypArLst = ArrayList()
         initResources()
         showBkmrks()
-        adrUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET)
         dnldDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()
         bkmrkBtn!!.setOnClickListener { view: View? ->
             onBkmrkPg = true
@@ -127,28 +126,31 @@ class MainActivity : Activity() {
             dlgBldr?.setPositiveButton(R.string.go) { dialogInterface: DialogInterface?, i: Int ->
                 connOk = false
                 clickDriven = false
-                adrUrlStr = adrUrlValET?.text?.toString()
-                if (adrUrlStr != null) {
-                    URL.initializeURL(adrUrlStr!!)
-                    Log.d("Debug", "Host: ${URL.fetchUrlHost()}, Port: ${URL.fetchUrlPort()}")  // Add this debug log
 
-                }
-                if (URL.isUrlOkay) {
-                    Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
+                adrUrlValET = alrtDlg?.findViewById(R.id.adrUrlValET) // Initialize it here
+                adrUrlStr = adrUrlValET?.text.toString()
+
+                if (!adrUrlStr.isNullOrEmpty()) {
+                    Log.d("Debug", "adrUrlStr inside positive button click: $adrUrlStr")
+                    URL.initializeURL(adrUrlStr!!)
+                    if (URL.isUrlOkay) {
+                        Log.d("adrUrlValET", "url != null && url.isUrlOkay()")
+                    } else {
+                        adrUrlValET?.setText(adrUrlStr)
+                        Log.d("adrUrlValET", "else")
+                    }
+                    // Create a new thread to execute the ConnectAsync task
+                    val thread = Thread(ConnectAsync())
+                    thread.start()
                 } else {
-                    adrUrlValET?.setText(adrUrlStr)
-                    Log.d("adrUrlValET", "else")
+                    Toast.makeText(this, "Please enter a URL", Toast.LENGTH_SHORT).show()
                 }
-                // Create a new thread to execute the ConnectAsync task
-                val thread = Thread(ConnectAsync())
-                thread.start()
             }
             dlgBldr?.setNegativeButton(R.string.cncl) { dialogInterface: DialogInterface, i: Int -> dialogInterface.cancel() }
+
             alrtDlg = dlgBldr?.create()
             alrtDlg?.show()
         }
-
-
 
         rfrshBtn!!.setOnClickListener { view: View? ->
             if (adrUrlStr != "") {
