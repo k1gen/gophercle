@@ -2,12 +2,12 @@
 
 ### gophercle lets you access the gopherspace in a very efficient, resource-friendly way.
 
-this is a fork of https://gitlab.com/biotstoiq/gophercle, all credit goes to him
-~~there most probably won't be any new features/improvements because I don't know Java~~
+this is a fork of https://gitlab.com/biotstoiq/gophercle, all credit goes to him.
+~~there most probably won't be any new features/improvements because I don't know Java.~~
 nvm, I've rewritten the entire thing in Kotlin and with help
-of [01LiDev](https://github.com/01LiDev) it's fully functional
-this repo exists because I wanted to use #000000 black background instead of grey one
-(edit: also, to practice Kotlin and maintain something)
+of [01LiDev](https://github.com/01LiDev) it's fully functional.
+this repo exists because I wanted to use #000000 black background instead of grey one (edit: also,
+to practice Kotlin and maintain something)
 
 ### features
 
